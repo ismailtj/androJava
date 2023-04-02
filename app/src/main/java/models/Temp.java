@@ -15,6 +15,10 @@ public class Temp {
         this.temperature = temperature;
     }
 
+    public Temp() {
+
+    }
+
     public String getUserName() {
         return userName;
     }
@@ -51,7 +55,7 @@ public class Temp {
         return temperature;
     }
 
-    public void setTemperature(Double temperature) {
+    public void setTemperature(double temperature) {
         this.temperature = temperature;
     }
 }

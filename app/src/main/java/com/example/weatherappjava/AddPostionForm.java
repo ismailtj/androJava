@@ -2,14 +2,22 @@ package com.example.weatherappjava;
 
 import static kotlinx.coroutines.BuildersKt.launch;
 
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,17 +26,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import kotlinx.coroutines.Dispatchers;
-import kotlinx.coroutines.GlobalScope;
+
 import models.ApiClient;
 import models.Temp;
-import retrofit2.Call;
 import retrofit2.Response;
 
 public class AddPostionForm extends AppCompatActivity {
 
     private String tempsState;
-    private Temp temp;
+    private EditText numbText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +46,10 @@ public class AddPostionForm extends AppCompatActivity {
             actionBar.setTitle("Form");
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
+
+        numbText= findViewById(R.id.editTextNumber);
+        numbText.setText("0.0");
 
 
         Spinner spinner = findViewById(R.id.spinner);
@@ -68,15 +78,43 @@ public class AddPostionForm extends AppCompatActivity {
         });
 
         Button button = findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                temp.setTemps(tempsState);
-                temp.setLongitude(0.0);
-                temp.setLatitude(0.0);
-                temp.setTemperature(0.0);
-                addTemp(temp);
+        button.setOnClickListener(view -> {
+
+            Temp temp = new Temp();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
             }
+
+            LocationListener locationListener = new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    // Here you can get the latitude and longitude values from the Location object
+                    double latitude = location.getLatitude();
+                    double longitude = location.getLongitude();
+                    temp.setLatitude(latitude);
+                    temp.setLongitude(longitude);
+                    Log.d("Location", "Latitude: " + latitude + " Longitude: " + longitude);
+                }
+
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+                }
+
+                @Override
+                public void onProviderEnabled(String provider) {
+                }
+
+                @Override
+                public void onProviderDisabled(String provider) {
+                }
+            };
+
+
+            temp.setTemps(tempsState);
+            temp.setTemperature(Double.parseDouble(String.valueOf(numbText.getText())));
+            addTemp(temp);
         });
 
     }
